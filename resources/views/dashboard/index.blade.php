@@ -53,7 +53,7 @@
                  width: '80px',
                  render: function(data, type, row) {
                    var btn = in_progress ? 'Resume Judging' : 'Start Judging' ;
-                   return `<a href="judging/` + row.id + `"><button class="btn btn-primary float-right">`+ btn +`</button>`;
+                   return `<a href="entries/` + row.id + `"><button class="btn btn-primary float-right">`+ btn +`</button>`;
                  }},
 
             ],

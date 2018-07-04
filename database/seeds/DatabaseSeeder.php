@@ -16,12 +16,11 @@ class DatabaseSeeder extends Seeder
         factory(App\Entry::class, 50)->create()->each(function ($entry) use ($users) {
             $entry->categories()->save(factory(App\Category::class)->make());
             factory(App\Comment::class, 10)
-                ->create(
-                    [
-                        'entry_id' => $entry->id, 
-                        'user_id' => $users->pluck('id')->random(), 
-                    ]
-                );
+                ->create(['entry_id' => $entry->id, 'user_id' => 0])
+                ->each(function ($comment) use ($users) {
+                    $comment->update(['user_id' => $users->pluck('id')->random()]);
+                    $comment->save();
+                });
         });
 
         factory(App\Question::class, 10)->create()->each(function ($question) {

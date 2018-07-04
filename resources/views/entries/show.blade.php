@@ -8,13 +8,15 @@
                 <h1>{{ $entry->name }} - {!! $entry->status === 'to_be_judged' ? '<span class="badge badge-primary">to be judged</span>' : '<span class="badge badge-warning">Judging in Progress</span>' !!}</h1>
             </div>
             <div class="col-md-4 pull-right">
-                <a href="#" class="entry-button btn btn-secondary btn--icon-text float-right">Next</a>
-                <div></div>
-                <a href="#" class="entry-button btn btn-secondary btn--icon-text float-right">Previous</a>
+                <a href="{{ $next ? route('entries.show', $next) : '#' }}" class="entry-button btn btn-secondary btn--icon-text float-right">Next</a>
+                <a href="{{ $previous ? route('entries.show', $previous) : '#' }}" class="entry-button btn btn-secondary btn--icon-text float-right">Previous</a>
+                <div class="entry-button form-group float-right">
             </div>
         </div>
     </header>
 @endsection
+
+@include('entries.partials.lightbox')
 
 <div class="row">
     <div class="col-md-4 card">
@@ -75,10 +77,6 @@
                 <p><strong>Long Description:</strong><br> {{ $entry->long_description }}</p><br>
             @endif
 
-            @if(!empty($entry->question))
-                <p><strong>Question:</strong><br> {{ $entry->question }}</p><br>
-            @endif
-
         </div>        
     </div>
     
@@ -88,19 +86,39 @@
             <h5>Questions</h5>
         </div>
 
-        <eg></eg>
+        
 
     <ul class="list-group d-flex w-100">
             @foreach ($questions as $question)
                 <li class="list-group-item question card card-body">
-                    {{$question->body}} <span class="badge badge-info float-right"></span>
-                    <div class="slider slider{{$question->id}}"></div>
+                    {{$question->body}} <span  data-value="" class="badge badge-info float-right slider-badge{{$question->id}}" ></span>
+                    <div class="slider" data-id="{{$question->id}}"></div>
                 </li>
             @endforeach
         </ul>
         <div class="card card-footer">
-            <button class="btn btn-success">Submit</button>        
+            <button class="btn btn-success" disabled>Submit</button>        
         </div>
+    </div>
+
+    <div class="col-md-4">
+        
+        <div class="card-header card">
+            <h5>Comments</h5>
+        </div>
+
+        
+
+    <ul class="list-group d-flex w-100">
+            @foreach ($comments as $comment)
+                <li class="list-group-item question card card-body">
+                    <div>
+                        <strong>{{$comment->user->name}}</strong> <small>{{$comment->created_at->diffForHumans()}}</small>
+                        <p>{{$comment->body}}<p>
+                    </div>
+                </li>
+            @endforeach
+        </ul>
     </div>
 </div>
 
@@ -111,8 +129,9 @@
 
     var sliders = document.getElementsByClassName('slider');
 
-    for (var i = 0; i < sliders.length; i++) {
-        noUiSlider.create(sliders.item(i), {
+    [].slice.call(sliders).forEach(function(slider, index) {
+        
+        noUiSlider.create(slider, {
             start: 5,
             step: 1,
             connect: "lower",
@@ -122,7 +141,23 @@
                 'max': 10
             },
         });
-    }
+
+        slider.noUiSlider.on('set', function() {
+            var id = ($( $(this)[0].target ).data('id'));
+            var selector = 'span.slider-badge' + id;
+            
+            $(selector).data('value', slider.noUiSlider.get() );
+            $(selector).html( slider.noUiSlider.get() );
+
+            var values = document.getElementsByClassName('badge-info');
+            values = [].slice.call(values).map(val => parseInt( $(val).html() )).filter(val => (val) );
+
+            if (values.length == sliders.length) {
+                $('.btn.btn-success').removeAttr('disabled')
+            }
+        });
+    });
+
 
     
 

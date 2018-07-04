@@ -46,7 +46,12 @@ class EntryController extends Controller
      */
     public function show(Entry $entry)
     {
-        //
+        $entries = Entry::where('status', $entry->status)->get();
+        
+        $previous = $entries->where('id', '<', $entry->id)->max('id');
+        $next = $entries->where('id', '>', $entry->id)->min('id');
+
+        return view('entries.show', compact('entry', 'next', 'previous'));
     }
 
     /**

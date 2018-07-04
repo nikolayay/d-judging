@@ -14,7 +14,10 @@ class JudgingController extends Controller
      */
     public function show(Entry $entry)
     {
-        return view('judging.index', compact('entry'));
+        $previous = Entry::where('id', '<', $entry->id)->max('id');
+        $next = Entry::where('id', '>', $entry->id)->min('id');
+
+        return view('judging.index', compact('entry', 'next', 'previous'));
     }
 
 }

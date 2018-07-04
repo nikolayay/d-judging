@@ -31,10 +31,10 @@ class AppServiceProvider extends ServiceProvider
 
         });
 
-        view()->composer('judging.index', function ($view) {
-
+        view()->composer('entries.show', function ($view) {
+            // $id = $view->getData()['entry']->id;
             $view->with('questions', \App\Question::all());
-
+            $view->with('comments', $view->getData()['entry']->comments);
         });
     }
 }

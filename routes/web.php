@@ -14,5 +14,5 @@
 Auth::routes();
 
 Route::get('/', 'DashboardController@index')->name('dashboard');
-Route::get('/judging/{entry}', 'JudgingController@show');
+Route::resource('/entries', 'EntryController');
 
